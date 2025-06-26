@@ -16,8 +16,25 @@ const pageIndexParser = createParser({
 const sortParser = createParser({
   parse: (value: string | null) => {
     if (!value) return [];
-    const [id, desc] = value.split('_');
-    return [{ id, desc: desc === 'desc' }];
+    
+    const parts = value.split('_');
+    if (parts.length !== 2) {
+      console.warn(`Invalid sort format: ${value}. Expected format: "columnId_asc|desc"`);
+      return [];
+    }
+    
+    const [id, desc] = parts;
+    if (!id || !id.trim()) {
+      console.warn(`Invalid column ID in sort: ${value}`);
+      return [];
+    }
+    
+    if (desc !== 'asc' && desc !== 'desc') {
+      console.warn(`Invalid sort direction: ${desc}. Expected "asc" or "desc"`);
+      return [];
+    }
+    
+    return [{ id: id.trim(), desc: desc === 'desc' }];
   },
   serialize: (value: SortingState) => {
     if (value.length === 0) return '';
@@ -27,16 +44,35 @@ const sortParser = createParser({
   eq: (a, b) => JSON.stringify(a) === JSON.stringify(b),
 });
 
+const isValidFilterValue = (value: unknown): value is FilterValue => {
+  return (
+    value === undefined ||
+    typeof value === 'string' ||
+    (Array.isArray(value) && value.every(item => typeof item === 'string'))
+  );
+};
+
 const filtersParser = createParser({
   parse: (value: string | null): FiltersObj => {
     if (!value) return {};
     try {
       const parsed = JSON.parse(decodeURIComponent(value));
+      
+      if (typeof parsed !== 'object' || parsed === null) {
+        console.warn('Invalid filters format: expected object');
+        return {};
+      }
+      
       return Object.entries(parsed).reduce((acc, [key, value]) => {
+        if (!isValidFilterValue(value)) {
+          console.warn(`Invalid filter value for key "${key}":`, value);
+          return acc;
+        }
         acc[key] = value as FilterValue;
         return acc;
       }, {} as FiltersObj);
-    } catch {
+    } catch (error) {
+      console.warn('Failed to parse filters from URL:', error);
       return {};
     }
   },

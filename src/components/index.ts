@@ -1,7 +1,9 @@
 // Custom Components
 export {
   DataTable,
+  type DataTableProps,
   type ExtendedColumnDef,
+  type ExportFileFormats,
   type FiltersObj,
   type FilterValue,
   type PinningDirection,

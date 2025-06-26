@@ -61,13 +61,21 @@ export const createStyles = ({
   return style;
 };
 
+const validateColumnId = (id: unknown): string => {
+  if (typeof id !== 'string' || !id.trim()) {
+    throw new Error(`Column ID must be a non-empty string, received: ${typeof id}`);
+  }
+  return id;
+};
+
 const initializeColumnSizing = <TData>(
   columns: ExtendedColumnDef<TData>[],
   defaultWidth?: number,
 ): ColumnSizingState => {
   const sizing: ColumnSizingState = {};
   columns.forEach((col) => {
-    sizing[col.id as string] = col.size || defaultWidth || DEFAULT_COLUMN_WIDTH;
+    const columnId = validateColumnId(col.id);
+    sizing[columnId] = col.size || defaultWidth || DEFAULT_COLUMN_WIDTH;
   });
   return sizing;
 };
@@ -77,7 +85,7 @@ const setupColumnPinningAndOrder = <TData>(columns: ExtendedColumnDef<TData>[]) 
   const unpinned: string[] = [];
 
   columns.forEach((col) => {
-    const id = col.id as string;
+    const id = validateColumnId(col.id);
     if (col.pinned === 'right') {
       pinning.right.push(id);
     } else if (col.pinned === 'left' || col.pinned === true) {
@@ -122,4 +130,5 @@ export {
   initializeColumnSizing,
   removeActiveRowClassname,
   setupColumnPinningAndOrder,
+  validateColumnId,
 };
