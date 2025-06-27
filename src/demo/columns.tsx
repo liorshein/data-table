@@ -1,10 +1,12 @@
-import { ExtendedColumnDef, SortHeader } from "@/components";
+import { ExtendedColumnDef, SortHeader, TableActions, TableAction } from "@/components";
+import { Eye, Edit, Trash2, Copy } from "lucide-react";
 import { Person } from "@/demo/mockData";
 
 export const columns: ExtendedColumnDef<Person>[] = [
     {
         id: "id",
         accessorKey: "id",
+        displayLabel: 'ID',
         header: ({ column }) => {
             return <SortHeader column={column} title="ID" />;
         },
@@ -13,6 +15,7 @@ export const columns: ExtendedColumnDef<Person>[] = [
     {
         id: "firstName",
         accessorKey: "firstName",
+        displayLabel: 'First Name',
         header: ({ column }) => {
             return <SortHeader column={column} title="First Name" />;
         },
@@ -20,6 +23,7 @@ export const columns: ExtendedColumnDef<Person>[] = [
     {
         id: "lastName",
         accessorKey: "lastName",
+        displayLabel: 'Last Name',
         header: ({ column }) => {
             return <SortHeader column={column} title="Last Name" />;
         },
@@ -27,6 +31,7 @@ export const columns: ExtendedColumnDef<Person>[] = [
     {
         id: "age",
         accessorKey: "age",
+        displayLabel: 'Age',
         header: ({ column }) => {
             return <SortHeader column={column} title="Age" />;
         },
@@ -35,6 +40,7 @@ export const columns: ExtendedColumnDef<Person>[] = [
     {
         id: "department",
         accessorKey: "department",
+        displayLabel: 'Department',
         header: ({ column }) => {
             return <SortHeader column={column} title="Department" />;
         },
@@ -50,6 +56,7 @@ export const columns: ExtendedColumnDef<Person>[] = [
     {
         id: "status",
         accessorKey: "status",
+        displayLabel: 'Status',
         header: ({ column }) => {
             return <SortHeader column={column} title="Status" />;
         },
@@ -71,6 +78,7 @@ export const columns: ExtendedColumnDef<Person>[] = [
     {
         id: "email",
         accessorKey: "email",
+        displayLabel: 'Email',
         header: ({ column }) => {
             return <SortHeader column={column} title="Email" />;
         },
@@ -87,6 +95,7 @@ export const columns: ExtendedColumnDef<Person>[] = [
     {
         id: "joinDate",
         accessorKey: "joinDate",
+        displayLabel: 'Join Date',
         header: ({ column }) => {
             return <SortHeader column={column} title="Join Date" />;
         },
@@ -101,5 +110,59 @@ export const columns: ExtendedColumnDef<Person>[] = [
         },
         size: 120,
         sortingFn: "datetime"
+    },
+    {
+        id: "actions",
+        displayLabel: 'Actions',
+        header: "Actions",
+        cell: ({ row }) => {
+            const person = row.original;
+
+            const actions: TableAction<Person>[] = [
+                {
+                    label: "View Details",
+                    icon: <Eye className="h-4 w-4" />,
+                    onClick: (person) => {
+                        console.log("View person:", person);
+                        alert(`Viewing details for ${person.firstName} ${person.lastName}`);
+                    }
+                },
+                {
+                    label: "Edit",
+                    icon: <Edit className="h-4 w-4" />,
+                    onClick: (person) => {
+                        console.log("Edit person:", person);
+                        alert(`Editing ${person.firstName} ${person.lastName}`);
+                    }
+                },
+                {
+                    label: "Copy Info",
+                    icon: <Copy className="h-4 w-4" />,
+                    onClick: (person) => {
+                        const personData = `${person.firstName} ${person.lastName} (${person.email})`;
+                        navigator.clipboard.writeText(personData);
+                        alert(`Copied: ${personData}`);
+                    },
+                    separatorAfter: true
+                },
+                {
+                    label: "Delete",
+                    icon: <Trash2 className="h-4 w-4" />,
+                    onClick: (person) => {
+                        console.log("Delete person:", person);
+                        if (window.confirm(`Are you sure you want to delete ${person.firstName} ${person.lastName}?`)) {
+                            alert(`Deleted ${person.firstName} ${person.lastName}`);
+                        }
+                    },
+                    variant: "destructive"
+                }
+            ];
+
+            return <TableActions data={person} actions={actions} />;
+        },
+        enableSorting: false,
+        enableHiding: false,
+        size: 80,
+        pinned: 'right',
     },
 ];

@@ -1,6 +1,7 @@
 import { FilterOption } from "@/components";
+import { DropdownFilters } from "@/components/shared/data-table/toolbar/filters";
 
-export const filterOptions: FilterOption[] = [
+const filterOptions: FilterOption[] = [
   {
     key: "status",
     group: "Status",
@@ -51,3 +52,24 @@ export const filterOptions: FilterOption[] = [
     type: "checkbox",
   },
 ];
+
+const Filters = () => {
+  const groupedOptions: Record<string, FilterOption[]> = {};
+
+  filterOptions.forEach((option) => {
+    if (!groupedOptions[option.group]) {
+      groupedOptions[option.group] = [];
+    }
+    groupedOptions[option.group].push(option);
+  });
+
+  const standardFilterGroups = Object.entries(groupedOptions).map(([groupName, options]) => ({
+    key: options[0]?.key || groupName.toLowerCase(),
+    name: groupName,
+    options,
+  }));
+
+  return <DropdownFilters filterGroups={standardFilterGroups} />;
+};
+
+export { Filters }

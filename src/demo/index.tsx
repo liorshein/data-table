@@ -1,11 +1,12 @@
-import { DataTable, FiltersObj } from "@/components";
+import { DataTable } from "@/components";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useQueryParams } from "@/hooks/useUrlParams";
 import { SortingState, PaginationState } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { fetchPersonData, Person } from "./mockData";
 import { columns } from "./columns";
-import { filterOptions } from "./filters";
+import { Filters } from "./Filters";
+import { createColumnVisibility } from "@/lib/dataTable";
 
 const EmployeesTableDemo = () => {
     const [data, setData] = useState<Person[]>([]);
@@ -52,26 +53,11 @@ const EmployeesTableDemo = () => {
         });
     };
 
-    const handleFiltersApply = (filters: FiltersObj) => {
-        setQueryStates((prev) => {
-            const newFilters = {
-                ...prev.filters,
-                ...filters,
-            };
-
-            Object.keys(newFilters).forEach((key) => {
-                if (newFilters[key] === undefined) {
-                    delete newFilters[key];
-                }
-            });
-
-            return { filters: newFilters };
-        });
-    };
-
     const handleSearch = (value: string) => {
         if (value !== search) setQueryStates({ search: value });
     };
+
+    const visibilityState = createColumnVisibility(columns, ['status']);
 
     return (
         <div className="space-y-6">
@@ -80,18 +66,21 @@ const EmployeesTableDemo = () => {
                 data={data}
                 rowCount={rowCount}
                 sortingState={sort}
+                isLoading={isLoading}
                 paginationState={{ pageIndex, pageSize }}
                 onSortingChange={handleSortingChange}
                 onPaginationChange={handlePaginationChange}
-                pageSizeOptions={[10, 20, 50, 100]}
-                isLoading={isLoading}
+                visibilityState={visibilityState}
                 searchValue={search}
                 onSearch={handleSearch}
-                filterOptions={filterOptions}
-                onFiltersApply={handleFiltersApply}
+                // disableRowSelection
+                // disableRowClick
+                // actionButton={<InstallAgentDialog />}
+                filters={[<Filters />]}
                 onExport={(format) => {
                     alert(`Exporting data as ${format}. In a real app, this would download the data.`);
                 }}
+                pageSizeOptions={[10, 20, 50, 100]}
             />
 
             <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">

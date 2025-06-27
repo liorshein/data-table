@@ -2,16 +2,14 @@ import { ColumnSizingState, Table } from '@tanstack/react-table';
 import React from 'react';
 
 import { Export } from '@/components/shared/data-table/toolbar/Export';
-import { Filters } from '@/components/shared/data-table/toolbar/Filters';
 import { SearchBar } from '@/components/shared/data-table/toolbar/SearchBar';
 import { Settings } from '@/components/shared/data-table/toolbar/Settings';
-import { FilterOption, FiltersObj } from '@/components/shared/filters-dropdown';
 import { IconButton } from '@/components/shared/IconButton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ExportFileFormats } from '..';
 import { IconColumnResize } from '@/icons';
 
-type BaseTableToolbarProps<TData> = {
+type TableToolbarProps<TData> = {
   /** The table instance from TanStack Table */
   table: Table<TData>;
   /** The initial column sizing state */
@@ -25,31 +23,17 @@ type BaseTableToolbarProps<TData> = {
   /** Callback function triggered when reset resize button is clicked */
   onResetResize: () => void;
   /** Optional additional filter components to render */
-  additionalFilters?: React.ReactNode[];
+  filters?: React.ReactNode[];
   /** Optional action button to render on the right side */
   actionButton?: React.ReactNode;
+  /** Optional disable auto refresh settings */
+  disableAutoRefresh?: boolean;
 };
-
-type WithFiltersProps<TData> = BaseTableToolbarProps<TData> & {
-  /** Array of filter options for the Filters component */
-  filterOptions: FilterOption[];
-  /** Callback function triggered when filters are applied
-   * @param {FiltersObj} filters The current filter state
-   */
-  handleFiltersApply: (filters: FiltersObj) => void;
-};
-
-type WithoutFiltersProps<TData> = BaseTableToolbarProps<TData> & {
-  filterOptions?: never;
-  handleFiltersApply?: never;
-};
-
-type TableToolbarProps<TData> = WithFiltersProps<TData> | WithoutFiltersProps<TData>;
 
 /**
  * A comprehensive toolbar component for tables that combines:
  * - Search functionality
- * - Filters with additional custom filters
+ * - Filters
  * - Column visibility controls
  * - Export options
  * - Custom action button
@@ -58,13 +42,11 @@ type TableToolbarProps<TData> = WithFiltersProps<TData> | WithoutFiltersProps<TD
 const TableToolbar = <TData,>({
   table,
   initialColumnSize,
-  filterOptions = [],
   searchValue,
-  handleFiltersApply,
   onSearch,
   onExport,
   onResetResize,
-  additionalFilters,
+  filters,
   actionButton,
 }: TableToolbarProps<TData>) => {
   const hasColumnResizing = () => {
@@ -79,15 +61,12 @@ const TableToolbar = <TData,>({
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-col xl:flex-row justify-center xl:items-center items-start gap-2">
-        {searchValue !== undefined && onSearch && <SearchBar searchValue={searchValue} onSearch={onSearch} />}
-        {filterOptions.length > 0 && handleFiltersApply && (
-          <Filters
-            filterOptions={filterOptions}
-            handleFiltersApply={handleFiltersApply}
-            additionalFilters={additionalFilters}
-          />
+        {searchValue !== undefined && onSearch && (
+          <SearchBar searchValue={searchValue} onSearch={onSearch} />
         )}
-        <p className="text-muted-foreground text-sm">{`${table.getRowCount()} found`}</p>
+        {filters &&
+          filters.map((filter, index) => <React.Fragment key={index}>{filter}</React.Fragment>)}
+        <p className="text-text-tertiary text-sm">{`${table.getRowCount()} found`}</p>
       </div>
       <div className="flex items-center gap-2">
         {hasColumnResizing() && (

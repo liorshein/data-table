@@ -19,6 +19,7 @@ export { Dropdown } from '@/components/shared/Dropdown';
 export { DropdownCheckbox } from '@/components/shared/DropdownCheckbox';
 export { DropdownRadio } from '@/components/shared/DropdownRadio';
 export { EmptyState } from '@/components/shared/EmptyState';
+export { TableActions, type TableAction } from '@/components/shared/TableActions';
 
 // Shadcn Components
 export { Button } from '@/components/ui/button';
@@ -43,6 +44,23 @@ export {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+export {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 export { Input } from '@/components/ui/input';
 export { LoadingSpinner } from '@/components/ui/loading-spinner';
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

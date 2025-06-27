@@ -1,5 +1,10 @@
 import { SortingState } from '@tanstack/react-table';
-import { createParser, parseAsBoolean, parseAsInteger, useQueryState, useQueryStates } from 'nuqs';
+import {
+  createParser,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from 'nuqs';
 
 import { FiltersObj, FilterValue } from '@/components';
 
@@ -16,25 +21,8 @@ const pageIndexParser = createParser({
 const sortParser = createParser({
   parse: (value: string | null) => {
     if (!value) return [];
-    
-    const parts = value.split('_');
-    if (parts.length !== 2) {
-      console.warn(`Invalid sort format: ${value}. Expected format: "columnId_asc|desc"`);
-      return [];
-    }
-    
-    const [id, desc] = parts;
-    if (!id || !id.trim()) {
-      console.warn(`Invalid column ID in sort: ${value}`);
-      return [];
-    }
-    
-    if (desc !== 'asc' && desc !== 'desc') {
-      console.warn(`Invalid sort direction: ${desc}. Expected "asc" or "desc"`);
-      return [];
-    }
-    
-    return [{ id: id.trim(), desc: desc === 'desc' }];
+    const [id, desc] = value.split('_');
+    return [{ id, desc: desc === 'desc' }];
   },
   serialize: (value: SortingState) => {
     if (value.length === 0) return '';
@@ -44,35 +32,17 @@ const sortParser = createParser({
   eq: (a, b) => JSON.stringify(a) === JSON.stringify(b),
 });
 
-const isValidFilterValue = (value: unknown): value is FilterValue => {
-  return (
-    value === undefined ||
-    typeof value === 'string' ||
-    (Array.isArray(value) && value.every(item => typeof item === 'string'))
-  );
-};
 
 const filtersParser = createParser({
   parse: (value: string | null): FiltersObj => {
     if (!value) return {};
     try {
       const parsed = JSON.parse(decodeURIComponent(value));
-      
-      if (typeof parsed !== 'object' || parsed === null) {
-        console.warn('Invalid filters format: expected object');
-        return {};
-      }
-      
       return Object.entries(parsed).reduce((acc, [key, value]) => {
-        if (!isValidFilterValue(value)) {
-          console.warn(`Invalid filter value for key "${key}":`, value);
-          return acc;
-        }
         acc[key] = value as FilterValue;
         return acc;
       }, {} as FiltersObj);
-    } catch (error) {
-      console.warn('Failed to parse filters from URL:', error);
+    } catch {
       return {};
     }
   },
@@ -94,7 +64,7 @@ const searchParser = createParser({
   },
   serialize: (value: string): string => {
     if (!value) return '';
-    return encodeURIComponent(value);
+    return value;
   },
   eq: (a: string, b: string) => a === b,
 });
@@ -105,6 +75,7 @@ export const baseParsers = {
   sort: sortParser.withDefault([]),
   filters: filtersParser.withDefault({}),
   search: searchParser.withOptions({ throttleMs: 1000 }).withDefault(''),
+  exposureId: parseAsString.withDefault(''),
 };
 
 const baseQueryUrlKeys = {
@@ -113,35 +84,11 @@ const baseQueryUrlKeys = {
   sort: 'sort',
   filters: 'filters',
   search: 'search',
+  exposureId: 'exposureId',
 };
 
 const useQueryParams = () => {
   return useQueryStates(baseParsers, { urlKeys: baseQueryUrlKeys });
 };
 
-const createNamespacedUrlKeys = (prefix: string, urlKeys: Record<string, string>) => {
-  return Object.entries(urlKeys).reduce(
-    (acc, [key, value]) => {
-      acc[key] = `${prefix}_${value}`;
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
-};
-
-const useNamespacedQueryParams = (namespace: string) => {
-  const namespacedUrlKeys = createNamespacedUrlKeys(namespace, baseQueryUrlKeys);
-  return useQueryStates(baseParsers, { urlKeys: namespacedUrlKeys });
-};
-
-const useModalParam = (key: string) => {
-  return useQueryState(key, parseAsBoolean.withDefault(false));
-};
-
-const sortToString = (value: SortingState) => {
-  if (value.length === 0) return undefined;
-  const sort = value[0];
-  return `${sort.id}_${sort.desc ? 'desc' : 'asc'}`;
-};
-
-export { sortToString, useModalParam, useNamespacedQueryParams, useQueryParams };
+export { useQueryParams };

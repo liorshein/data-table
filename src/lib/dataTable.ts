@@ -47,7 +47,7 @@ export const createStyles = ({
     style.position = 'sticky';
     style[direction || 'left'] = offset;
     style.zIndex = isHeader ? 40 : 10;
-    style.backgroundColor = 'inherit';
+    style.backgroundColor = 'white';
 
     if (isHeader) {
       style.borderBottom = '1px solid var(--color-border)';

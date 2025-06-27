@@ -38,7 +38,7 @@ const HeaderCell = <TData,>({
       key={header.id}
       colSpan={header.colSpan}
       style={getHeaderStyle(header)}
-      className={cn('relative group', isResizing ? 'select-none' : '')}
+      className={cn('relative group truncate', isResizing ? 'select-none' : '')}
     >
       {!header.isPlaceholder && flexRender(header.column.columnDef.header, header.getContext())}
       {header.column.getCanResize() && !isPinned && (
@@ -46,13 +46,13 @@ const HeaderCell = <TData,>({
           className={cn(
             'absolute top-0 right-0 h-full w-1 rounded-md',
             'cursor-col-resize',
-            isResizing ? 'bg-muted-foreground' : 'group-hover:bg-secondary',
+            isResizing ? 'bg-primary' : 'group-hover:bg-secondary',
           )}
         >
           <div
             onMouseDown={getResizeHandler()}
             onTouchStart={getResizeHandler()}
-            className={cn('w-full h-full rounded-md', !isResizing && 'hover:bg-muted-foreground')}
+            className={cn('w-full h-full rounded-md', !isResizing && 'hover:bg-primary')}
           />
         </div>
       )}

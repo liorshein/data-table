@@ -57,8 +57,9 @@ const TableBody = <TData,>({
             onClick={(e) => {
               if (disableRowClick) return;
               const isActionsCell = (e.target as HTMLElement).closest('[data-cell-actions]');
+              const isDropdown = (e.target as HTMLElement).closest('[role="menu"]');
               const isCheckboxCell = (e.target as HTMLElement).closest('[data-cell-checkbox]');
-              if (onRowClick && !isActionsCell && !isCheckboxCell) {
+              if (onRowClick && !isActionsCell && !isCheckboxCell && !isDropdown) {
                 onRowClick(row.original);
               }
             }}

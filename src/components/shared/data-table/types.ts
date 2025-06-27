@@ -1,8 +1,6 @@
 import { Row, SortingState, PaginationState, VisibilityState, ColumnDef } from '@tanstack/react-table';
 import React from 'react';
 
-import { FilterOption, FiltersObj } from '@/components/shared/filters-dropdown';
-
 export type ExportFileFormats = 'csv' | 'json';
 export type PinningDirection = boolean | 'left' | 'right';
 
@@ -42,8 +40,6 @@ export type DataTableCallbacks<TData> = {
   onSortingChange: (sorting: SortingState) => void;
   /** Callback when pagination changes */
   onPaginationChange: (pagination: PaginationState) => void;
-  /** Callback when filters are applied */
-  onFiltersApply?: (filters: FiltersObj) => void;
   /** Callback when a row is clicked */
   onRowClick?: (rowData: TData) => void;
   /** Callback when search value changes, if doesn't exists - search field doesn't appear */
@@ -61,15 +57,13 @@ export type DataTableFeatures = {
   isLoading?: boolean;
   /** Available page size options */
   pageSizeOptions?: number[];
-  /** Array of filter options */
-  filterOptions?: FilterOption[];
+  /** Optional filter components */
+  filters?: React.ReactNode[];
 };
 
 export type DataTableCustomization<TData> = {
   /** Optional card className */
   className?: string;
-  /** Optional additional filter components */
-  additionalFilters?: React.ReactNode[];
   /** Optional action button component */
   actionButton?: React.ReactNode;
   /** Optional empty state overlay */

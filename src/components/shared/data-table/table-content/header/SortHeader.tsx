@@ -30,7 +30,7 @@ const SortHeader = <TData,>({ column, title, className }: SortHeaderProps<TData>
     <Button
       variant="ghost"
       size="sm"
-      className={cn('h-8 px-0 active:bg-transparent hover:bg-transparent cursor-pointer', className)}
+      className={cn('h-8 px-0 active:bg-transparent hover:bg-transparent', className)}
       onClick={() => column.toggleSorting()}
     >
       {title}
@@ -41,7 +41,7 @@ const SortHeader = <TData,>({ column, title, className }: SortHeaderProps<TData>
           <IconSortDesc className="size-4 text-primary" />
         )
       ) : (
-        <IconSortDefault className="size-4 text-muted-foreground" />
+        <IconSortDefault className="size-4 text-text-tertiary" />
       )}
     </Button>
   );
